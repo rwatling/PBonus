@@ -232,27 +232,70 @@ def fillObsCPT(bayesNet, gameState):
 
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
-    #print(bottomLeftPos)
-    #print(topLeftPos)
-    #print(bottomRightPos)
-    #print(topRightPos)
-    #print(bayesNet)
     for housePos in gameState.getPossibleHouses():
         for obsPos in gameState.getHouseWalls(housePos):
 
+            # Check the position of the house
+            if housePos == bottomLeftPos:
+                housePos = BOTTOM_LEFT_VAL
+            elif housePos == topLeftPos:
+                housePos = TOP_LEFT_VAL
+            elif housePos == bottomRightPos:
+                housePos = BOTTOM_RIGHT_VAL
+            elif housePos == topRightPos:
+                housePos = TOP_RIGHT_VAL
+
+            # Get observations
             obsVar = OBS_VAR_TEMPLATE % obsPos
-            print(obsPos)
-            print(obsVar)
-            obsFactor = bn.Factor([obsVar], [X_POS_VAR, Y_POS_VAR], bayesNet.variableDomainsDict())
+
+            # Our observations are unconditioned
+            # Our houses are conditioned
+            # Basically, conditioned = parents, unconditioned = nodes that we are "assessing"
+            # In this case: our observations are conditionally dependent on our parents
+            obsFactor = bn.Factor([obsVar], [FOOD_HOUSE_VAR, GHOST_HOUSE_VAR], bayesNet.variableDomainsDict())
+
+            # Check possible assignments
             for assignment in obsFactor.getAllPossibleAssignmentDicts():
-                prob = 1
+                prob = 0
+                ghostHousePos = assignment[GHOST_HOUSE_VAR]
+                foodHousePos = assignment[FOOD_HOUSE_VAR]
+
+                # If adjacent house center is occupied by the food house,
+                # It is red with probability PROB_FOOD_RED
+                # and blue otherwise
+                if housePos == foodHousePos:
+                    if assignment[obsVar] == RED_OBS_VAL:
+                        prob = PROB_FOOD_RED
+                    elif assignment[obsVar] == BLUE_OBS_VAL:
+                        prob = 1 - PROB_FOOD_RED
+                    else:
+                        prob = 0
+
+                # If the adjacent house center is occupied by the ghost house,
+                # It is red with probability PROB_GHOST_RED
+                # and blue otherwise
+                elif housePos == ghostHousePos:
+                    if assignment[obsVar] == RED_OBS_VAL:
+                        prob = PROB_GHOST_RED
+                    elif assignment[obsVar] == BLUE_OBS_VAL:
+                        prob = 1 - PROB_GHOST_RED
+                    else:
+                        prob = 0
+
+                # If the adjacent house is occupied by neither the ghost house or
+                # the food house an observation is none with certainty
+                else:
+                    # Reset these to zero
+                    if assignment[obsVar] == RED_OBS_VAL:
+                        prob = 0
+                    elif assignment[obsVar] == BLUE_OBS_VAL:
+                        prob = 0
+                    else:
+                        prob = 1
+
                 obsFactor.setProbability(assignment, prob)
 
             bayesNet.setCPT(obsVar, obsFactor)
-            # if the house center is occupied by neither the ghost or food house,
-            # an observation is none with prob = 1
-
-
     ### END SOLUTION
     
 
