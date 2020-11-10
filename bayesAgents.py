@@ -156,7 +156,15 @@ def fillYCPT(bayesNet, gameState):
     yFactor = bn.Factor([Y_POS_VAR], [], bayesNet.variableDomainsDict())
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
-    util.raiseNotDefined() 
+    from layout import PROB_BOTH_TOP
+    from layout import PROB_BOTH_BOTTOM
+    from layout import PROB_ONLY_LEFT_TOP
+    from layout import PROB_ONLY_LEFT_BOTTOM
+
+    yFactor.setProbability({Y_POS_VAR: BOTH_TOP_VAL}, PROB_BOTH_TOP)
+    yFactor.setProbability({Y_POS_VAR: BOTH_BOTTOM_VAL}, PROB_BOTH_BOTTOM)
+    yFactor.setProbability({Y_POS_VAR: LEFT_TOP_VAL}, PROB_ONLY_LEFT_TOP)
+    yFactor.setProbability({Y_POS_VAR: LEFT_BOTTOM_VAL}, PROB_ONLY_LEFT_BOTTOM)
 
     ### END SOLUTION
     bayesNet.setCPT(Y_POS_VAR, yFactor)
@@ -224,7 +232,6 @@ def fillObsCPT(bayesNet, gameState):
 
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
-    util.raiseNotDefined()
     
     ### END SOLUTION
     
