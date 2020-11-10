@@ -232,7 +232,27 @@ def fillObsCPT(bayesNet, gameState):
 
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
-    
+    #print(bottomLeftPos)
+    #print(topLeftPos)
+    #print(bottomRightPos)
+    #print(topRightPos)
+    #print(bayesNet)
+    for housePos in gameState.getPossibleHouses():
+        for obsPos in gameState.getHouseWalls(housePos):
+
+            obsVar = OBS_VAR_TEMPLATE % obsPos
+            print(obsPos)
+            print(obsVar)
+            obsFactor = bn.Factor([obsVar], [X_POS_VAR, Y_POS_VAR], bayesNet.variableDomainsDict())
+            for assignment in obsFactor.getAllPossibleAssignmentDicts():
+                prob = 1
+                obsFactor.setProbability(assignment, prob)
+
+            bayesNet.setCPT(obsVar, obsFactor)
+            # if the house center is occupied by neither the ghost or food house,
+            # an observation is none with prob = 1
+
+
     ### END SOLUTION
     
 
