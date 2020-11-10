@@ -97,8 +97,33 @@ def constructBayesNet(gameState):
 
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
-    util.raiseNotDefined()
+    for housePos in gameState.getPossibleHouses():
+        for obsPos in gameState.getHouseWalls(housePos):
+            # Append the obsVar to the list
+            obsVar = OBS_VAR_TEMPLATE % obsPos
+            obsVars.append(obsVar)
 
+            # Bottom layer of BN
+            # Food house -> All observations
+            # Ghost house -> All observations
+            edges.append((FOOD_HOUSE_VAR, obsVar))
+            edges.append((GHOST_HOUSE_VAR, obsVar))
+
+            # Add observation dictionary
+            variableDomainsDict[obsVar] = OBS_VALS
+
+    # Top layer of BNN
+    # Positions (X and Y) -> House (Food house and Ghost house)
+    edges.append((X_POS_VAR, FOOD_HOUSE_VAR))
+    edges.append((Y_POS_VAR, FOOD_HOUSE_VAR))
+    edges.append((X_POS_VAR, GHOST_HOUSE_VAR))
+    edges.append((Y_POS_VAR, GHOST_HOUSE_VAR))
+
+    # Dictionaries for position nodes and house nodes
+    variableDomainsDict[FOOD_HOUSE_VAR] = HOUSE_VALS
+    variableDomainsDict[GHOST_HOUSE_VAR] = HOUSE_VALS
+    variableDomainsDict[X_POS_VAR] = X_POS_VALS
+    variableDomainsDict[Y_POS_VAR] = Y_POS_VALS
     ### END SOLUTION
 
     variables = [X_POS_VAR, Y_POS_VAR] + HOUSE_VARS + obsVars
