@@ -97,7 +97,21 @@ def constructBayesNet(gameState):
 
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
-    util.raiseNotDefined()
+    edges.append((X_POS_VAR, FOOD_HOUSE_VAR))
+    edges.append((X_POS_VAR, GHOST_HOUSE_VAR))
+    edges.append((Y_POS_VAR, FOOD_HOUSE_VAR))
+    edges.append((Y_POS_VAR, GHOST_HOUSE_VAR))
+
+    for housePos in gameState.getPossibleHouses():
+        for obsPos in gameState.getHouseWalls(housePos):
+            obsVars.append(OBS_VAR_TEMPLATE % obsPos)
+            edges.append((FOOD_HOUSE_VAR, ""))
+            edges.append((GHOST_HOUSE_VAR, ""))
+
+    variableDomainsDict[X_POS_VAR] = X_POS_VALS
+    variableDomainsDict[Y_POS_VAR] = Y_POS_VALS
+    variableDomainsDict[FOOD_HOUSE_VAR] = HOUSE_VALS
+    variableDomainsDict[GHOST_HOUSE_VAR] = HOUSE_VALS
 
     ### END SOLUTION
 
