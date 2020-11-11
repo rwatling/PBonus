@@ -104,11 +104,11 @@ def joinFactors(factors):
 
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
-    conditionedList = []
-    unconditionedList = []
+    conditioned = []
+    unconditioned = []
     dictionary = {}
 
-    # Variable domains dictionary doesn't play nice in python 3 -Piazza
+    # Dictionary doesn't play nice in python 3 -Piazza
     for factor in factors:
         dictionary = factor.variableDomainsDict()
         break
@@ -117,16 +117,29 @@ def joinFactors(factors):
         factorUnconditioned = factor.unconditionedVariables()
         factorConditioned = factor.conditionedVariables()
 
+        # Need to add all unconditioned
         for var in factorUnconditioned:
-            if var not in factorUnconditioned:
-                unconditionedList.append(var)
+            unconditioned.append(var)
 
         for var in factorConditioned:
-            if (var not in factorConditioned) and (var not in factorUnconditioned):
-                conditionedList.append(var)
+            if var not in conditioned:
+                conditioned.append(var)
 
-    newFactor = Factor(unconditionedList, conditionedList, dictionary)
+    # remove from conditioned if unconditioned
+    # not the same if just done in the loop above
+    conditioned = [var for var in conditioned if var not in unconditioned]
+
+    newFactor = Factor(unconditioned, conditioned, dictionary)
     assignments = newFactor.getAllPossibleAssignmentDicts()
+
+    # Add probabilities of possible assignments
+    for assignment in assignments:
+        prob = 1
+
+        for factor in factors:
+            prob *= factor.getProbability(assignment)
+
+        newFactor.setProbability(assignment, prob)
 
     return newFactor
     ### END SOLUTION
