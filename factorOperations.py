@@ -15,6 +15,7 @@
 from bayesNet import Factor
 import operator as op
 import util
+import copy
 from functools import reduce
 
 def joinFactorsByVariableWithCallTracking(callTrackingList=None):
@@ -103,8 +104,31 @@ def joinFactors(factors):
 
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
-    util.raiseNotDefined() 
+    conditionedList = []
+    unconditionedList = []
+    dictionary = {}
 
+    # Variable domains dictionary doesn't play nice in python 3 -Piazza
+    for factor in factors:
+        dictionary = factor.variableDomainsDict()
+        break
+
+    for factor in factors:
+        factorUnconditioned = factor.unconditionedVariables()
+        factorConditioned = factor.conditionedVariables()
+
+        for var in factorUnconditioned:
+            if var not in factorUnconditioned:
+                unconditionedList.append(var)
+
+        for var in factorConditioned:
+            if (var not in factorConditioned) and (var not in factorUnconditioned):
+                conditionedList.append(var)
+
+    newFactor = Factor(unconditionedList, conditionedList, dictionary)
+    assignments = newFactor.getAllPossibleAssignmentDicts()
+
+    return newFactor
     ### END SOLUTION
 
 
