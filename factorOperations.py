@@ -252,9 +252,9 @@ def normalize(factor):
     you should return None.
 
     This is intended to be used at the end of a probabilistic inference query.
-    Because of this, all variables that have more than one element in their 
+    Because of this, all variables that have more than one element in their
     domain are assumed to be unconditioned.
-    There are more general implementations of normalize, but we will only 
+    There are more general implementations of normalize, but we will only
     implement this version.
 
     Useful functions:
@@ -278,10 +278,10 @@ def normalize(factor):
 
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
-    #print(factor)
-
     assignments = factor.getAllPossibleAssignmentDicts()
     dictionary = factor.variableDomainsDict()
+    unconditioned = factor.unconditionedVariables()
+    conditioned = factor.conditionedVariables()
 
     sum = 0
     for assignment in assignments:
@@ -290,13 +290,28 @@ def normalize(factor):
     if sum == 0:
         return None
 
-    # I think that I just need to intialize this differently and everything will work
-    newFactor = Factor(factor.unconditionedVariables(), factor.conditionedVariables() ,dictionary)
+    # "The set of conditioned variables for the normalized factor consists
+    # of the input factor's conditioned variables as well as any of the
+    # input factor's unconditioned variables with exactly one entry in their
+    # domain."
+    for var in unconditioned:
+        if len(variableDomainsDict[var]) == 1:
+            conditioned.add(var)
+
+    # "Because of this, all variables that have more than one element in their
+    # domain are assumed to be unconditioned."
+    # So basically unconditioned - conditioned but
+    # can't be done in the loop above as it changes loop size
+    unconditioned = [var for var in unconditioned if var not in conditioned]
+
+    # construct new factor
+    newFactor = Factor(unconditioned, conditioned, dictionary)
+
+    # Actual normalization
     for assignment in assignments:
         prob = factor.getProbability(assignment) / sum
         newFactor.setProbability(assignment, prob)
 
     return newFactor
-
     ### END SOLUTION
 
