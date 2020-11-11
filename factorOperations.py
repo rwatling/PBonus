@@ -278,7 +278,25 @@ def normalize(factor):
 
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
-    util.raiseNotDefined() 
+    #print(factor)
+
+    assignments = factor.getAllPossibleAssignmentDicts()
+    dictionary = factor.variableDomainsDict()
+
+    sum = 0
+    for assignment in assignments:
+        sum += factor.getProbability(assignment)
+
+    if sum == 0:
+        return None
+
+    # I think that I just need to intialize this differently and everything will work
+    newFactor = Factor(factor.unconditionedVariables(), factor.conditionedVariables() ,dictionary)
+    for assignment in assignments:
+        prob = factor.getProbability(assignment) / sum
+        newFactor.setProbability(assignment, prob)
+
+    return newFactor
 
     ### END SOLUTION
 
