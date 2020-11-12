@@ -132,24 +132,26 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
 
         "*** YOUR CODE HERE ***"
         ### BEGIN SOLUTION
+        # grab all factors where we know the evidence variables (to reduce the size of the tables)
         currentFactorsList = bayesNet.getAllCPTsWithEvidence(evidenceDict)
+        # don't need to join right away, this is already taken care of in the loop
 
-        # Iterate over all the hidden variables
-        for eliminateVar in eliminationOrder:
+        for var in eliminationOrder:
+            currentFactorsList, joinedFactor = joinFactorsByVariable(currentFactorsList, var)
 
-            # Perform a join for each
-            currentFactorsList, newFactor = joinFactorsByVariable(currentFactorsList, eliminateVar)
-
-            # Eliminate a single variable
-            if len(newFactor.unconditionedVariables()) > 1:
-                temp = eliminate(newFactor, eliminateVar)
+            # If a factor that you are about to eliminate a variable from has
+            # only one unconditioned variable, you should not eliminate it
+            # and instead just discard the factor.
+            if len(joinedFactor.unconditionedVariables()) > 1:
+                # eliminate on the joined factor set
+                temp = eliminate(joinedFactor, var)
                 currentFactorsList.append(temp)
 
-        # Full join and normalize
-        joined = joinFactors(currentFactorsList)
-        normalized = normalize(joined)
+        # Final full join
+        fullJoinFactor = joinFactors(currentFactorsList)
 
-        return normalized
+        # Normalize the full join
+        return normalize(fullJoinFactor)
         ### END SOLUTION
 
 

@@ -278,6 +278,8 @@ def normalize(factor):
 
     "*** YOUR CODE HERE ***"
     ### BEGIN SOLUTION
+    #print(factor)
+
     assignments = factor.getAllPossibleAssignmentDicts()
     dictionary = factor.variableDomainsDict()
     unconditioned = factor.unconditionedVariables()
@@ -313,5 +315,6 @@ def normalize(factor):
         newFactor.setProbability(assignment, prob)
 
     return newFactor
+
     ### END SOLUTION
 
