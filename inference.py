@@ -132,7 +132,42 @@ def inferenceByVariableEliminationWithCallTracking(callTrackingList=None):
 
         "*** YOUR CODE HERE ***"
         ### BEGIN SOLUTION
-        util.raiseNotDefined() 
+        # grab all factors where we know the evidence variables (to reduce the size of the tables)
+        currentFactorsList = bayesNet.getAllCPTsWithEvidence(evidenceDict)
+        incrementallyMarginalizedJoint = joinFactors(currentFactorsList)
+        #print("elim order", eliminationOrder)
+        #print("var set", bayesNet.variablesSet())
+
+        for var in eliminationOrder:
+            currentFactorsList, joinedFactor = joinFactorsByVariable(currentFactorsList, var)
+
+            # If a factor that you are about to eliminate a variable from has
+            # only one unconditioned variable, you should not eliminate it
+            # and instead just discard the factor.
+            #print("unconditioned vars", joinedFactor.unconditionedVariables())
+            if len(joinedFactor.unconditionedVariables()) > 1:
+                currentFactorsList.append(joinedFactor)
+                incrementallyMarginalizedJoint = eliminate(incrementallyMarginalizedJoint, var)
+            else:
+                #print("hi1")
+                newUnconditioned = incrementallyMarginalizedJoint.unconditionedVariables()
+                #print("hi2")
+                newUnconditioned.remove(var)
+                #print("hi3")
+                incrementallyMarginalizedJoint = Factor(newUnconditioned,
+                                                        incrementallyMarginalizedJoint.conditionedVariables(),
+                                                        incrementallyMarginalizedJoint.variableDomainsDict())
+                #print("hi4")
+
+        fullJointOverQueryAndEvidence = incrementallyMarginalizedJoint
+        #print(fullJointOverQueryAndEvidence)
+        #print(normalize(fullJointOverQueryAndEvidence)) this is printing none
+        #print("hi5")
+
+        # normalize so that the probability sums to one
+        # the input factor contains only the query variables and the evidence variables,
+        # both as unconditioned variables
+        return normalize(fullJointOverQueryAndEvidence)
 
         ### END SOLUTION
 
